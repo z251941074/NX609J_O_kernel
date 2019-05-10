@@ -1,0 +1,52 @@
+﻿（1）镜像ramdisk.img解压与打包
+
+
+解压步骤如下：
+mv ramdisk.img ramdisk.img.gz
+gunzip ramdisk.img.gz
+mkdir ramdisk
+cd ramdisk
+cpio -i -F ../ramdisk.img
+即可查看ramdisk目录下文件
+
+打包步骤如下：
+mkbootfs ramdisk | minigzip > ./ramdisk.img
+
+（2）镜像签名
+boot_signer /boot out/target/product/NX609J/boot.img 
+这个函数可以校验boot.img,其四个参数的意思如下：
+args[0] is the target name, typically /boot
+args[1] is the path to a boot image to sign--->out/target/product/NX609J/boot.img
+args[2] is the path to a private key--->build/target/product/security/verity.pk8
+args[3] is the path to the matching public key certificate----->build/target/product/security/verity.x509.pem 
+args[4] is the path where to output the signed boot image----->out/target/product/NX609J/boot.img
+
+
+(3)sed用法
+
+sed -i '/字符串/d' file   特定字符串的删除   
+
+sed -i 's/原字符串/新字符串/' 1.txt   只取代每行的首个原字符串
+sed -i 's/原字符串/新字符串/g' 1.txt  取代所以的原字符串
+
+
+sed -i 's/^@//' file    去掉 “行首” 带“@”的首字母
+
+
+（4）mk文件，添加注释
+打印变量的方法是：$(warning  $(var))
+$(warning  " LOCAL_LDLIBS =  $(LOCAL_LDLIBS)")
+$(info $(TARGET_PLATFORM))
+
+$(info $(shell xxxx)）
+$(info $(shell ($(LOCAL_PATH)/echo_test.sh)))
+
+（5）
+Image -->未压缩
+
+Image.gz -->压缩arm64位
+
+zImage  --->压缩arm32位
+
+TARGET_KERNEL_APPEND_DTB=true  
+Image.gz-dtb --->压缩arm64附加dtb
